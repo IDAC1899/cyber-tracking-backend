@@ -8,3 +8,15 @@ const create = async (req, res) => {
     res.status(400).json({ err: err.message });
   }
 };
+
+const index = async (req, res) => {
+  try {
+    const investigations = await Investigation.find({})
+      .populate('incident')
+      .populate('assignedTo', 'username name');
+    res.status(200).json({ investigations });
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+};
+
