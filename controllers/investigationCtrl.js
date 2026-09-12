@@ -51,3 +51,23 @@ const update = async (req, res) => {
     res.status(400).json({ err: err.message });
   }
 };
+
+const deleteInvestigation = async (req, res) => {
+  try {
+    const investigation = await Investigation.findByIdAndDelete(req.params.id);
+    if (!investigation) {
+      return res.status(404).json({ err: 'Investigation not found' });
+    }
+    res.status(200).json({ message: 'Investigation deleted' });
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+};
+
+module.exports = {
+  create,
+  index,
+  show,
+  update,
+  deleteInvestigation,
+};
