@@ -58,9 +58,25 @@ try {
 }
 };
 
+// DELETE - remove an incident by id
+// ADMIN ONLY - restricted via checkAdmin middleware in incidentRoutes.js
+// returns 200 with a confirmation message, or 404 if not found
+const deleteIncident = async (req,res) => {
+try {
+  const incident = await Incident.findByIdAndDelete(req.params.id);
+  if(!incident){
+    return res.status(404).json({ err: 'Incident not found'});
+  }
+  res.status(200).json({ message: 'Incident deleted'});
+} catch (err) {
+  res.status(500).json({ err: err.message }); 
+}
+};
+
 module.exports = {
     create,
     index,
     show,
     update,
+    deleteIncident,
 };
