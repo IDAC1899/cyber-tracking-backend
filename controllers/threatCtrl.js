@@ -36,6 +36,7 @@ const update = async (req, res) => {
   try {
     const threat = await Threat.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
+      runValidators: true,
     });
     if (!threat) {
       return res.status(404).json({ err: 'Threat not found' });
