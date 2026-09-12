@@ -39,9 +39,28 @@ try {
 }
 };
 
+// UPDATE - update an incident by id, returns the updated document
+// returns 200 with the updated incident, 404 if not found, or 400 if validation fails
+const update = async (req,res) => {
+try {
+  const incident = await Incident.findByIdAndUpdate(req.params.id , req.body, 
+    {
+     // new: true returns updated doc; runValidators: true enforces schema rules on update
+     new: true,
+     runValidators: true,})
+     .populate('assignedTo', 'username name');
+  if(!incident){
+    return res.status(404).json({ err: 'Incident not found'});
+  }
+  res.status(200).json({ incident });
+} catch (err) {
+  res.status(400).json({ err: err.message }); 
+}
+};
 
 module.exports = {
     create,
     index,
     show,
+    update,
 };
