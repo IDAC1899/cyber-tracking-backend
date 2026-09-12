@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const investigationSchema = new mongoose.Schema({
+const investigationSchema = new mongoose.Schema(
+  {
   title: {
     type: String,
     required: true,
@@ -45,7 +46,9 @@ const investigationSchema = new mongoose.Schema({
   completedAt: {
     type: Date,
   },
-});
+  },
+  { timestamps: true }  // adds createdAt and updatedAt automatically
+);
 
 const Investigation = mongoose.model('Investigation', investigationSchema);
 
