@@ -3,6 +3,8 @@ const Investigation = require('../models/investigation');
 const create = async (req, res) => {
   try {
     const investigation = await Investigation.create(req.body);
+    await investigation.populate('incident');
+    await investigation.populate('assignedTo', 'username name');
     res.status(201).json({ investigation });
   } catch (err) {
     res.status(400).json({ err: err.message });
