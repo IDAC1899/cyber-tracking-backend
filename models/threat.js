@@ -14,6 +14,8 @@ const threatSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: ['IP Address', 'Domain', 'URL', 'File Hash', 'Email', 'Malware'],
+      required: true,
+
     },
     value: {
       type: String,
