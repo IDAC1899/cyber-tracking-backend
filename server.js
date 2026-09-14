@@ -11,11 +11,11 @@ const authRouter = require('./routes/authRoutes');
 const incidentRouter = require('./routes/incidentRoutes');
 const threatRouter = require('./routes/threatRoutes');
 const investigationRouter = require('./routes/investigationRoutes');
-
+const userRouter = require('./routes/userRoutes');
 app.use(cors());
 app.use(express.json());
 app.use(logger('dev'));
-
+app.use('/users', userRouter);
 // ROUTES
 app.use('/auth', authRouter);
 app.use('/incidents', incidentRouter);
