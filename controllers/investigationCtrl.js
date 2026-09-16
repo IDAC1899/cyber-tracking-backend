@@ -8,18 +8,19 @@ const create = async (req, res) => {
     await investigation.populate('incident');
     await investigation.populate('assignedTo', 'username name');
 
-    const assignedUser = await User.findById(req.body.assignedTo);
-    if (assignedUser?.email) {
-      try {
-        await sendEmail({
+    User.findById(req.body.assignedTo).then((assignedUser) => {
+      if (assignedUser?.email) {
+        sendEmail({
           to: assignedUser.email,
           subject: 'You have been assigned an investigation',
           text: `Hi ${assignedUser.name}, you've been assigned a new investigation: "${investigation.title}".`,
+        }).catch((emailError) => {
+          console.log('Email could not be sent:', emailError.message);
         });
-      } catch (emailError) {
-        console.log('Email could not be sent:', emailError.message);
       }
-    }
+    }).catch((lookupError) => {
+      console.log('Could not look up assigned user for email:', lookupError.message);
+    });
 
     res.status(201).json({ investigation });
   } catch (err) {
