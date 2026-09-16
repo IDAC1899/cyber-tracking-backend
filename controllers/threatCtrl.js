@@ -40,11 +40,6 @@ const update = async (req, res) => {
       return res.status(404).json({ err: 'Threat not found' });
     }
 
-    // analysts can only edit their own records — admins can edit anything
-    if (req.user.role !== 'admin' && !existingThreat.createdBy.equals(req.user._id)) {
-      return res.status(403).json({ err: 'You can only update threats you created' });
-    }
-
     const threat = await Threat.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
