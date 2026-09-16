@@ -10,18 +10,19 @@ try {
   const incident = await Incident.create(req.body);
 
   if (incident.severity === 'Critical') {
-    const assignedUser = await User.findById(incident.assignedTo);
-    if (assignedUser?.email) {
-      try {
-        await sendEmail({
+    User.findById(incident.assignedTo).then((assignedUser) => {
+      if (assignedUser?.email) {
+        sendEmail({
           to: assignedUser.email,
           subject: 'Critical incident created',
           text: `A critical incident was just logged: "${incident.title}". Immediate attention needed.`,
+        }).catch((emailError) => {
+          console.log('Email could not be sent:', emailError.message);
         });
-      } catch (emailError) {
-        console.log('Email could not be sent:', emailError.message);
       }
-    }
+    }).catch((lookupError) => {
+      console.log('Could not look up assigned user for email:', lookupError.message);
+    });
   }
 
   res.status(201).json({ incident }); 
