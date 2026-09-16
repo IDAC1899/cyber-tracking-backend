@@ -48,6 +48,11 @@ const threatSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    // the User who last saved an edit to this threat — for audit purposes
+    lastEditedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
   },
   { timestamps: true }
 );

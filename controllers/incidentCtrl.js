@@ -46,7 +46,9 @@ try {
 
 const show = async (req,res) => {
 try {
-  const incident = await Incident.findById(req.params.id).populate('assignedTo', 'username name');
+  const incident = await Incident.findById(req.params.id)
+    .populate('assignedTo', 'username name')
+    .populate('lastEditedBy', 'username name');
   if(!incident){
     return res.status(404).json({ err: 'Incident not found'});
   }
@@ -58,21 +60,22 @@ try {
 
 // UPDATE - update an incident by id, returns the updated document
 // returns 200 with the updated incident, 404 if not found, or 400 if validation fails
-const update = async (req,res) => {
-try {
-  const incident = await Incident.findByIdAndUpdate(req.params.id , req.body, 
-    {
-     // new: true returns updated doc; runValidators: true enforces schema rules on update
-     new: true,
-     runValidators: true,})
-     .populate('assignedTo', 'username name');
-  if(!incident){
-    return res.status(404).json({ err: 'Incident not found'});
+const update = async (req, res) => {
+  try {
+    const updates = { ...req.body, lastEditedBy: req.user._id };
+    const incident = await Incident.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+      runValidators: true,
+    })
+      .populate('assignedTo', 'username name')
+      .populate('lastEditedBy', 'username name');
+    if (!incident) {
+      return res.status(404).json({ err: 'Incident not found' });
+    }
+    res.status(200).json({ incident });
+  } catch (err) {
+    res.status(400).json({ err: err.message });
   }
-  res.status(200).json({ incident });
-} catch (err) {
-  res.status(400).json({ err: err.message }); 
-}
 };
 
 // DELETE - remove an incident by id

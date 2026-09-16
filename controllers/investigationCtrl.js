@@ -42,7 +42,8 @@ const show = async (req, res) => {
   try {
     const investigation = await Investigation.findById(req.params.id)
       .populate('incident')
-      .populate('assignedTo', 'username name');
+      .populate('assignedTo', 'username name')
+      .populate('lastEditedBy', 'username name');
     if (!investigation) {
       return res.status(404).json({ err: 'Investigation not found' });
     }
@@ -54,13 +55,15 @@ const show = async (req, res) => {
 
 const update = async (req, res) => {
   try {
+    const updates = { ...req.body, lastEditedBy: req.user._id };
     const investigation = await Investigation.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updates,
       { new: true, runValidators: true }
     )
       .populate('incident')
-      .populate('assignedTo', 'username name');
+      .populate('assignedTo', 'username name')
+      .populate('lastEditedBy', 'username name');
     if (!investigation) {
       return res.status(404).json({ err: 'Investigation not found' });
     }

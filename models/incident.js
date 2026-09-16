@@ -48,6 +48,11 @@ const incidentSchema = new mongoose.Schema(
         ref: 'User',
         required: true,
     },
+    // the User who last saved an edit to this incident — for audit purposes
+    lastEditedBy:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
  } ,
  {timestamps: true}  // adds createdAt and updatedAt automatically
 );
