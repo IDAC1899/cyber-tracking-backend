@@ -1,10 +1,26 @@
 const Investigation = require('../models/investigation');
+const User = require('../models/user');
+const sendEmail = require('../services/emailService');
 
 const create = async (req, res) => {
   try {
     const investigation = await Investigation.create(req.body);
     await investigation.populate('incident');
     await investigation.populate('assignedTo', 'username name');
+
+    const assignedUser = await User.findById(req.body.assignedTo);
+    if (assignedUser?.email) {
+      try {
+        await sendEmail({
+          to: assignedUser.email,
+          subject: 'You have been assigned an investigation',
+          text: `Hi ${assignedUser.name}, you've been assigned a new investigation: "${investigation.title}".`,
+        });
+      } catch (emailError) {
+        console.log('Email could not be sent:', emailError.message);
+      }
+    }
+
     res.status(201).json({ investigation });
   } catch (err) {
     res.status(400).json({ err: err.message });
