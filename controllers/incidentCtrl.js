@@ -1,5 +1,6 @@
-
 const Incident = require('../models/incident');
+const User = require('../models/user');
+const sendEmail = require('../services/emailService');
 
 
 // CREATE - new incident from the req.body 
@@ -7,6 +8,22 @@ const Incident = require('../models/incident');
 const create = async (req,res) => {
 try {
   const incident = await Incident.create(req.body);
+
+  if (incident.severity === 'Critical') {
+    const assignedUser = await User.findById(incident.assignedTo);
+    if (assignedUser?.email) {
+      try {
+        await sendEmail({
+          to: assignedUser.email,
+          subject: 'Critical incident created',
+          text: `A critical incident was just logged: "${incident.title}". Immediate attention needed.`,
+        });
+      } catch (emailError) {
+        console.log('Email could not be sent:', emailError.message);
+      }
+    }
+  }
+
   res.status(201).json({ incident }); 
 } catch (err) {
   res.status(400).json({ err: err.message }); 
