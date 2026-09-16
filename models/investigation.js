@@ -46,6 +46,11 @@ const investigationSchema = new mongoose.Schema(
   completedAt: {
     type: Date,
   },
+  // the User who last saved an edit to this investigation — for audit purposes
+  lastEditedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
   },
   { timestamps: true }  // adds createdAt and updatedAt automatically
 );

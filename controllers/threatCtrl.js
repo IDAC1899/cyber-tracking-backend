@@ -23,7 +23,9 @@ const index = async (req, res) => {
 
 const show = async (req, res) => {
   try {
-    const threat = await Threat.findById(req.params.id).populate('incident');
+    const threat = await Threat.findById(req.params.id)
+      .populate('incident')
+      .populate('lastEditedBy', 'username name');
     if (!threat) {
       return res.status(404).json({ err: 'Threat not found' });
     }
@@ -35,15 +37,14 @@ const show = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const existingThreat = await Threat.findById(req.params.id);
-    if (!existingThreat) {
-      return res.status(404).json({ err: 'Threat not found' });
-    }
-
-    const threat = await Threat.findByIdAndUpdate(req.params.id, req.body, {
+    const updates = { ...req.body, lastEditedBy: req.user._id };
+    const threat = await Threat.findByIdAndUpdate(req.params.id, updates, {
       new: true,
       runValidators: true,
-    });
+    }).populate('lastEditedBy', 'username name');
+    if (!threat) {
+      return res.status(404).json({ err: 'Threat not found' });
+    }
     res.status(200).json({ threat });
   } catch (err) {
     res.status(400).json({ err: err.message });
